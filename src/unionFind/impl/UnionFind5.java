@@ -3,20 +3,20 @@ package unionFind.impl;
 import unionFind.UF;
 
 /**
- * 此种实现方式是采用森林树的方式实现，当每个节点在初始化的时候指向的是自身，此时每个都是一个独立的树，
- * 在查询两个节点是否是连接的时候的时间复杂度是O(h) --h 代表的是树的高度，如果将及两个节点相连接只需要将两个节点
- * 的根节点相连接，将两个节点相连接的时间复杂度是O(h)级别的，两个操作都必须和两个节点所在的树的深度有很大的的关系。
- * <p>
- * 该方式是实现并查集的常用方式
+ * 路径压缩
  */
-public class UnionFind2 implements UF {
+public class UnionFind5 implements UF {
+
+    private int[] rank; //用来记录每棵子树的节点的深度（此时只能代表排名，不能直观代表深度）
     private int[] parent;
 
 
-    public UnionFind2(int size) {
+    public UnionFind5(int size) {
         this.parent = new int[size];
+        rank = new int[size];
         for (int i = 0; i < size; i++) {
             parent[i] = i;
+            rank[i] = 1;
         }
     }
 
@@ -29,7 +29,10 @@ public class UnionFind2 implements UF {
         if (q < 0 || q >= parent.length)
             throw new IllegalArgumentException("下标不合法");
         while (q != parent[q]) //当节点的指向自身的时候证明，该节点是根节点
+        {
+            parent[q] = parent[parent[q]]; //采用路径压缩的方式降低树的深度
             q = parent[q];
+        }
         return q;
     }
 
@@ -45,6 +48,13 @@ public class UnionFind2 implements UF {
         if (pRoot == qRoot)
             return;
         //当p节点的根节点和q节点的根节点不想等时，将p节点的根节点指向q的根节点
-        parent[p] = qRoot;
+        if (rank[pRoot] < rank[qRoot]) {
+            parent[pRoot] = qRoot;
+        } else if (rank[pRoot] < rank[qRoot]) {
+            parent[qRoot] = pRoot;
+        } else {
+            parent[qRoot] = pRoot;
+            rank[pRoot] += 1;
+        }
     }
 }
