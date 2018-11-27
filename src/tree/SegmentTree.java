@@ -92,6 +92,46 @@ public class SegmentTree<E> {
         }
     }
 
+    /**
+     * 更新下标的值
+     *
+     * @param index
+     * @param e
+     */
+    public void set(int index, E e) {
+        if (index < 0 || index >= data.length)
+            throw new IllegalArgumentException("Index is not exist");
+        data[index] = e;
+
+        setTree(0, 0, data.length - 1, index, e);
+    }
+
+    /**
+     * 更新区间树
+     *
+     * @param treeIndex
+     * @param l
+     * @param r
+     * @param index
+     * @param e
+     */
+    private void setTree(int treeIndex, int l, int r, int index, E e) {
+        if (l == r) {
+            tree[treeIndex] = e;
+            return;
+        }
+        int mid = l + (r - l) / 2;
+
+        int leftChild = leftChild(treeIndex);
+        int rightChild = rightChild(treeIndex);
+
+        if (mid >= r)//左子树查找
+            setTree(leftChild, l, mid, index, e);
+        else//右子树
+            setTree(rightChild, mid + 1, r, index, e);
+        tree[treeIndex] = merger.merger(tree[leftChild], tree[rightChild]);
+    }
+
     public int size() {
         return data.length;
     }
