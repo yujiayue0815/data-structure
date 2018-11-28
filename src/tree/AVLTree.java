@@ -2,6 +2,12 @@ package tree;
 
 import java.util.*;
 
+/**
+ * AVL树实现自平衡的机制，采用左右旋转的方式来实现。
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class AVLTree<K extends Comparable<K>, V> {
     /**
      * 节点
@@ -159,8 +165,61 @@ public class AVLTree<K extends Comparable<K>, V> {
         int balanceFactor = getBalanceFactor(node);
         if (Math.abs(balanceFactor) > 1)
             System.err.println(balanceFactor);
+
+        // 平衡性维护
+        if (balanceFactor > 1 && getBalanceFactor(node.left) >= 0)
+            return rightRotate(node);
+
+        if (balanceFactor < -1 && getBalanceFactor(node.right) <= 0)
+            return leftRotate(node);
         return node;
     }
+
+    /**
+     * 对节点经行向右旋转操作，返回旋转后新的根节点
+     * y                                   x
+     * / |        向右旋转                  /   |
+     * x  T4   ----------------------- >   z     y
+     * / \                                 / \    / \
+     * z   T3                              T1 T2  T3 T4
+     * / \
+     * T1 T2
+     *
+     * @param y
+     * @return
+     */
+    private Node<K, V> rightRotate(Node<K, V> y) {
+        Node<K, V> x = y.left;
+        Node<K, V> T3 = x.right;
+        //向右旋转过程
+        x.right = y;
+        y.left = T3;
+
+        //更新高度
+        y.height = Math.max(getHeight(y.left), getHeight(y.right)) + 1;
+        x.height = Math.max(getHeight(x.left), getHeight(y.right)) + 1;
+        return x;
+    }
+
+    /**
+     * 向左旋转
+     *
+     * @param y
+     * @return
+     */
+    private Node<K, V> leftRotate(Node<K, V> y) {
+        Node<K, V> x = y.right;
+        Node<K, V> T2 = x.left;
+
+        x.left = y;
+        y.right = T2;
+
+        y.height = Math.max(getHeight(y.left), getHeight(y.right)) + 1;
+        x.height = Math.max(getHeight(x.left), getHeight(x.right)) + 1;
+        return x;
+
+    }
+
 
     /**
      * 查看二分搜索查找元素

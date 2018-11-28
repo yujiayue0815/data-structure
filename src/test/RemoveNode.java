@@ -1,7 +1,5 @@
 package test;
 
-import linkList.LinkedList;
-
 public class RemoveNode {
 
 

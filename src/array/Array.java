@@ -1,7 +1,5 @@
 package array;
 
-import java.util.List;
-
 public class Array<E> {
 
     private E[] data;
